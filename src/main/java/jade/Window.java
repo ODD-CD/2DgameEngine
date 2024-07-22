@@ -108,12 +108,17 @@ public class Window {
         // Make the window visible
         glfwShowWindow(glfwWindow);
 
-        // This line is criticla for LWJGL's interoperation with GLFW's
+        // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+        // Enable the use of alpha channel("transparency")
+        // by using blending function.
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         Window.changeScene(0);
     }

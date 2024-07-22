@@ -2,6 +2,7 @@ package renderer;
 
 import components.SpriteRenderer;
 import jade.Window;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import util.AssetPool;
@@ -14,7 +15,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class RenderBatch {
+public class RenderBatch implements Comparable<RenderBatch>{
     // Vertex
     // ======
     // Pos              Color                          texCoords       texID
@@ -38,8 +39,10 @@ public class RenderBatch {
     private int vaoID, vboID;
     private int maxBatchSize;
     private Shader shader;
+    private int zIndex;
 
-    public RenderBatch(int maxBatchSize) {
+    public RenderBatch(int maxBatchSize, int zIndex) {
+        this.zIndex = zIndex;
         shader = AssetPool.getShader("assets/shaders/default.glsl");
 
         this.sprites = new SpriteRenderer[maxBatchSize];
@@ -104,10 +107,20 @@ public class RenderBatch {
     }
 
     public void render() {
-        // Rebuffer ALL data every frame.
-        // Change in the future to rebuffer only what is necessary
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        boolean rebuffedData = false;
+        for (int i = 0; i < numSprites; i++) {
+            SpriteRenderer sprite = sprites[i];
+            if (sprite.isDirty()) {
+                loadVertexProperties(i);
+                sprite.setClean();
+                rebuffedData = true;
+            }
+        }
+
+        if (rebuffedData) {
+            glBindBuffer(GL_ARRAY_BUFFER, vboID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
 
         // Upload to shader
         shader.use();
@@ -240,4 +253,12 @@ public class RenderBatch {
         return this.textures.contains(tex);
     }
 
+    public int getzIndex() {
+        return this.zIndex;
+    }
+
+    @Override
+    public int compareTo(@NotNull RenderBatch o) {
+        return Integer.compare(this.zIndex, o.getzIndex());
+    }
 }
