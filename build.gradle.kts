@@ -23,8 +23,17 @@ val jomlVersion = "1.10.6"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+
+    // GSON
+    implementation("com.google.code.gson:gson:2.11.0")
+
+    // LWJGL
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
+    // IMGUI
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+    // LWJGL
     implementation("org.lwjgl", "lwjgl")
     implementation("org.lwjgl", "lwjgl-assimp")
     implementation("org.lwjgl", "lwjgl-glfw")
