@@ -23,6 +23,9 @@ val jomlVersion = "1.10.6"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+    // JUnit
+    // https://mvnrepository.com/artifact/junit/junit
+    //testImplementation("junit:junit:4.13.2")
 
     // GSON
     implementation("com.google.code.gson:gson:2.11.0")

@@ -1,26 +1,33 @@
-package jade;
+package scenes;
 
 
-import components.Rigidbody;
+import components.MouseControls;
 import components.Sprite;
-import components.SpriteRenderer;
 import components.Spritesheet;
 import imgui.ImGui;
 import imgui.ImVec2;
+import jade.Camera;
+import jade.GameObject;
+import jade.Prefabs;
+import jade.Transform;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 import util.AssetPool;
 
-public class LevelEditorScene extends Scene{
+public class LevelEditorScene extends Scene {
 
-    private GameObject obj1;
     private Spritesheet sprites;
+    //MouseControls mouseControls = new MouseControls();
+    GameObject levelEditorStuff = new GameObject("LevelEditor", new Transform(new Vector2f()), 0);
     public LevelEditorScene() {
 
     }
 
     @Override
     public void init() {
+
+        levelEditorStuff.addComponent(new MouseControls());
+        //levelEditorStuff.addComponent(new GridLines());
+
         loadResources();
 
         this.camera = new Camera(new Vector2f(-250, 0));
@@ -31,26 +38,11 @@ public class LevelEditorScene extends Scene{
             // but obj1 will not be activated.
             // And if is not active it's not going to show color picker
             // So it needs to active here. For now
-            this.activeGameObject = gameObjects.get(0);
+            if (gameObjects.size() > 0) {
+                this.activeGameObject = gameObjects.get(0);
+            }
             return;
         }
-
-        obj1 = new GameObject("Object 1", new Transform(new Vector2f(200, 100), new Vector2f(256, 256)), 2);
-        SpriteRenderer obj1Sprite = new SpriteRenderer();
-        obj1Sprite.setColor(new Vector4f(1, 0, 0, 1));
-        obj1.addComponent(obj1Sprite);
-        obj1.addComponent(new Rigidbody());
-        this.addGameObjectToScene(obj1);
-        this.activeGameObject = obj1;
-
-        GameObject obj2 = new GameObject("Object 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)), 2);
-        SpriteRenderer obj2SpriteRenderer = new SpriteRenderer();
-        Sprite obj2sprite = new Sprite();
-        obj2sprite.setTexture(AssetPool.getTexture("assets/images/blendImage2.png"));
-        obj2SpriteRenderer.setSprite(obj2sprite);
-        obj2.addComponent(obj2SpriteRenderer);
-        this.addGameObjectToScene(obj2);
-
     }
 
     private void loadResources() {
@@ -63,8 +55,8 @@ public class LevelEditorScene extends Scene{
 
     @Override
     public void update(float dt) {
+        levelEditorStuff.update(dt);
 
-        MouseListener.getOrthoX();
         for (GameObject go : this.gameObjects) {
             go.update(dt);
         }
@@ -88,15 +80,16 @@ public class LevelEditorScene extends Scene{
             // Each sprite pixel has 4 channels (r,g,b,a), each channels is 1 byte
             // so sprite height and width is whatever many pixels they have
             // times 4 bytes
-            float spriteWidth = sprite.getWidth() * 4;
-            float spriteHeight = sprite.getHeight() * 4;
+            float spriteWidth = sprite.getWidth() * 2;
+            float spriteHeight = sprite.getHeight() * 2;
             int id = sprite.getTexId();
             Vector2f[] texCoords = sprite.getTexCoords();
 
             ImGui.pushID(i);
             //todo: Didn't understand yet.
-            if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
-                System.out.println("Button " + i + " clicked");
+            if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)) {
+                GameObject object = Prefabs.generateSpriteObject(sprite, 32, 32);
+                levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }
             ImGui.popID();
 
