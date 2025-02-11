@@ -15,6 +15,7 @@ public class Line2D {
     }
 
     public Line2D(Vector2f from, Vector2f to, Vector3f color, int lifetime) {
+        //System.out.println("OI");
         this.from = from;
         this.to = to;
         this.color = color;

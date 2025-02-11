@@ -28,6 +28,7 @@ public class ImGuiLayer {
 
     // Initialize Dear ImGui.
     public void initImGui() {
+        //System.out.println("initImgui");
         // IMPORTANT!!
         // This line is critical for Dear ImGui to work.
         ImGui.createContext();
@@ -181,6 +182,7 @@ public class ImGuiLayer {
 
         // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
         ImGui.newFrame();
+        System.out.println("update/ImGuiLayer");
         currentScene.sceneImgui();
         ImGui.showDemoWindow();
         ImGui.render();
@@ -189,6 +191,7 @@ public class ImGuiLayer {
     }
 
     private void startFrame(final float deltaTime) {
+        System.out.println("startFrame");
         float[] winWidth = {Window.getWidth()};
         float[] winHeight = {Window.getHeight()};
         double[] mousePosX = {0};
